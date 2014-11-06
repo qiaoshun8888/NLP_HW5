@@ -1,0 +1,66 @@
+Imports: {
+  import static gate.Utils.stringFor;
+}
+Phase:PersonNewTitle
+Input: Person Lookup Token 
+Options: control = appelt
+
+Macro: WRITE_TITLES
+:pnt
+{
+  String basePath = "C:\\NLP\\HW5\\";
+  String tFilePath = basePath + "title.lst";
+  Set<String> tHashSet = new HashSet<String>();
+
+  AnnotationSet tSet = bindings.get("t");
+  AnnotationSet pntSet = bindings.get("pnt");
+  
+  String title = stringFor(doc, tSet);
+
+  FeatureMap features = Factory.newFeatureMap();
+  outputAS.add(tSet.firstNode(), tSet.lastNode(), "Title", features);
+
+  if (title != "") {
+    System.out.println("title: " + title);
+    // Put all the existing titles into a HashSet
+    try(BufferedReader br = new BufferedReader(new FileReader(tFilePath))) {
+      StringBuilder sb = new StringBuilder();
+      String line = br.readLine();
+      while (line != null) {
+        tHashSet.add(line);
+        line = br.readLine();
+      }
+    } catch (IOException e) {
+      System.out.println(e);
+    }
+
+    System.out.println("set is: " + tHashSet);
+
+    if (!tHashSet.contains(title)) {
+      System.out.println("write title [" + title + "] into file.");
+      try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(tFilePath, true)))) {
+        out.println(title);
+      }catch (IOException e) {
+        System.out.println(e);
+      }
+    }
+  }
+}
+
+Rule: PersonNewTitle
+(
+  ({Lookup.majorType == "Title"}):t
+  |
+  (
+    {Token.kind!=punctuation}
+    ({Token.kind==word, Token.category==NNP, Token.orth==upperInitial}):t
+  )
+  ({Person}):p
+):pnt
+-->
+WRITE_TITLES
+
+//:t.Title = {
+//	rule = "PersonNewTitle"
+//}
+

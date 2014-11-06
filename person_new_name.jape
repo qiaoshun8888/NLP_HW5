@@ -1,0 +1,99 @@
+Imports: {
+  import static gate.Utils.stringFor;
+}
+Phase:PersonName
+Input: Lookup Token 
+Options: control = appelt
+
+Macro: WRITE_NAMES
+:pn
+{
+  String basePath = "C:\\NLP\\HW5\\";
+  String fnFilePath = basePath + "first_name.lst";
+  String lnFilePath = basePath + "last_name.lst";
+
+  AnnotationSet tSet = bindings.get("t");
+  AnnotationSet fnSet = bindings.get("fn");
+  AnnotationSet lnSet = bindings.get("ln");
+  AnnotationSet pnSet = bindings.get("pn");
+  
+  String title = stringFor(doc, tSet);
+  String first_name = fnSet != null ? stringFor(doc, fnSet) : "";
+  String last_name = lnSet != null ? stringFor(doc, lnSet) : "";
+
+  FeatureMap features = Factory.newFeatureMap();
+  features.put ("rule", "PersonName");
+  features.put("title", title);
+  features.put("first_name", first_name);
+  features.put("last_name", last_name);
+  outputAS.add(pnSet.firstNode(), pnSet.lastNode(), "PersonName", features);
+
+  if (first_name != "") {
+    System.out.println("fn: " + first_name);
+    // Put all the existing first names into a HashSet
+    Set<String> fnHashSet = new HashSet<String>();
+    try(BufferedReader br = new BufferedReader(new FileReader(fnFilePath))) {
+      StringBuilder sb = new StringBuilder();
+      String line = br.readLine();
+      while (line != null) {
+        fnHashSet.add(line);
+        line = br.readLine();
+      }
+    } catch (IOException e) {
+      System.out.println(e);
+    }
+
+    System.out.println("set is: " + fnHashSet);
+
+    if (!fnHashSet.contains(first_name)) {
+      System.out.println("write name [" + first_name + "] into file.");
+      try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fnFilePath, true)))) {
+        out.println(first_name);
+      }catch (IOException e) {
+        System.out.println(e);
+      }
+    }
+  }
+
+  if (last_name != "") {
+    System.out.println("fn: " + last_name);
+    // Put all the existing last names into a HashSet
+    Set<String> lnHashSet = new HashSet<String>();
+    try(BufferedReader br = new BufferedReader(new FileReader(lnFilePath))) {
+      StringBuilder sb = new StringBuilder();
+      String line = br.readLine();
+      while (line != null) {
+        lnHashSet.add(line);
+        line = br.readLine();
+      }
+    } catch (IOException e) {
+      System.out.println(e);
+    }
+
+    System.out.println("set is: " + lnHashSet);
+
+    if (!lnHashSet.contains(last_name)) {
+      System.out.println("write name [" + last_name + "] into file.");
+      try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(lnFilePath, true)))) {
+        out.println(last_name);
+      }catch (IOException e) {
+        System.out.println(e);
+      }
+    }
+  }
+}
+
+Rule: PersonName
+(
+  ({Lookup.majorType == "Title"}):t
+  ({Token.kind==word, Token.category==NNP, Token.orth==upperInitial})?:fn
+  ({Token.kind==word, Token.category==NNP, Token.orth==upperInitial}):ln
+):pn
+-->
+WRITE_NAMES
+
+//:pn.Person = {
+//	rule = "PersonName", 
+//	first_name = :fn.Token.string,
+//	last_name = :ln.Token.string,
+//	title = :t.Lookup@cleanString}

@@ -1,0 +1,20 @@
+Phase:PersonName
+Input: Lookup Token 
+Options: control = appelt
+
+Rule: PersonName
+(
+  (
+    ({Lookup.majorType == "FirstName"}):fn
+    ({Lookup.majorType == "LastName"})?:ln
+  )
+  |
+  (
+    ({Lookup.majorType == "LastName"}):ln
+  )
+):pn
+-->
+:pn.PersonName = {
+	rule = "PersonName", 
+	first_name = :fn.Lookup@cleanString,
+	last_name = :ln.Lookup@cleanString}
