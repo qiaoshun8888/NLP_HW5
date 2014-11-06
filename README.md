@@ -15,4 +15,35 @@ Expand your given list of titles to recognize new titles. Basic intuition is tha
 
 So your rules should be cautious and not count such cases as occurrence of a title even if in fact it turns out to be a title (e.g. "Major Tom, take your protein pills"). Of course, if it is in your given list of titles it should be counted as title, regradless of whether it occurs as the first word of a sentence or not.
 
-THe names to be used in this part of the homework should be the names you were initially given augmented with the new names you recognized in Part 2.
+The names to be used in this part of the homework should be the names you were initially given augmented with the new names you recognized in Part 2.
+
+
+IMPORTANT NOTE BEFORE RUN THE PROGRAM
+=============
+
+Make sure there is an empty line at the end of the files first_name.lst, last_name.lst and title.lst so that the jape script could write the new item into files correctly.
+
+Absolute path was used in person_new_name.jape and person_new_title.jape. Change 'basePath' before run the scripts.
+
+Run person_name.jape for question Part 1; run person_new_name.jape for Part2; run person_part3_main.jape for Part 3.
+
+DEFAUTL TEST DATA
+=============
+
+first_name.lst
+--------------
+Jonny
+(leave this line empty)
+
+last_name.lst
+-------------
+Evans
+(leave this line empty)
+
+title.lst
+---------
+Sir
+President
+Prof.
+Miss
+(leave this line empty)
